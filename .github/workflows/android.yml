@@ -1,22 +1,87 @@
-- name: Instalar dependencias Android
-  run: |
+name: Build ControlBus APK
 
-    sudo apt update
+on:
+  push:
+    branches:
+      - main
 
-    sudo apt install -y \
-      python3-pip \
-      openjdk-17-jdk \
-      unzip \
-      zip \
-      autoconf \
-      libtool \
-      pkg-config \
-      zlib1g-dev \
-      libncurses5-dev \
-      libncursesw5-dev \
-      cmake
+  workflow_dispatch:
 
 
-    yes | sdkmanager --licenses || true
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+    - name: Descargar repositorio
+      uses: actions/checkout@v4
+
+
+
+    - name: Instalar dependencias
+      run: |
+
+        sudo apt update
+
+        sudo apt install -y \
+          python3-pip \
+          openjdk-17-jdk \
+          unzip \
+          zip \
+          autoconf \
+          libtool \
+          pkg-config \
+          zlib1g-dev \
+          libncurses5-dev \
+          libncursesw5-dev \
+          cmake
+
+
+
+    - name: Instalar Buildozer
+      run: |
+
+        pip install --upgrade pip
+
+        pip install \
+          buildozer \
+          cython==0.29.36
+
+
+
+    - name: Aceptar licencias Android
+      run: |
+
+        yes | sdkmanager --licenses || true
+
+
+
+    - name: Instalar Android Build Tools
+      run: |
+
+        sdkmanager \
+          "platform-tools" \
+          "platforms;android-35" \
+          "build-tools;35.0.0"
+
+
+
+    - name: Compilar APK
+      run: |
+
+        buildozer -v android debug
+
+
+
+    - name: Guardar APK
+      uses: actions/upload-artifact@v4
+
+      with:
+
+        name: ControlBus-APK
 
         path: bin/*.apk
