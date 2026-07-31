@@ -1,54 +1,55 @@
 [app]
 
-# (str) Title of your application
+# Nombre de la aplicación
 title = ControlBus
 
-
-# (str) Package name
+# Nombre interno del paquete
 package.name = controlbus
 
-
-# (str) Package domain
+# Dominio del paquete
 package.domain = org.controlbus
 
-
-# (str) Source code directory
+# Carpeta donde está main.py
 source.dir = .
 
-
-# (list) Source files to include
+# Archivos que se incluirán
 source.include_exts = py,kv,png,jpg,jpeg,json,txt,atlas
 
-
-# (str) Application version
+# Versión
 version = 1.0
 
 
-# (list) Requirements
+# Dependencias
 requirements = python3,kivy
 
 
-# (str) Orientation
+# Orientación
 orientation = portrait
 
 
 
 [buildozer]
 
-# (int) Log level
+# Nivel de logs
 log_level = 2
 
 
 
 [android]
 
-[android]
-
+# Versión Android usada para compilar
 android.api = 35
+
+# Android mínimo compatible
 android.minapi = 23
+
+# NDK recomendado por python-for-android
 android.ndk = 28c
+
+
+# Aceptar licencias automáticamente
 android.accept_sdk_license = True
-android.build_tools_version = 35.0.0
 
+
+# Arquitecturas soportadas
 archs = arm64-v8a,armeabi-v7a
-
