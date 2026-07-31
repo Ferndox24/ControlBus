@@ -21,7 +21,6 @@ jobs:
       uses: actions/checkout@v4
 
 
-
     - name: Instalar dependencias
       run: |
 
@@ -41,7 +40,6 @@ jobs:
           cmake
 
 
-
     - name: Instalar Buildozer
       run: |
 
@@ -52,21 +50,18 @@ jobs:
           cython==0.29.36
 
 
-
-    - name: Aceptar licencias Android
+    - name: Configurar Buildozer
       run: |
 
-        mkdir -p ~/.buildozer/android/platform
-
-        yes | ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses || true
-
+        buildozer android clean || true
 
 
     - name: Compilar APK
+      env:
+        BUILDOZER_BUILD_TOOLS_VERSION: "35.0.0"
       run: |
 
         buildozer -v android debug
-
 
 
     - name: Guardar APK
