@@ -4,170 +4,130 @@ on:
   push:
     branches:
       - main
-
   workflow_dispatch:
-
 
 jobs:
   build:
-
     runs-on: ubuntu-22.04
 
-
     steps:
-
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-
-
-    - name: Setup Java 17
-      uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: "17"
-
-
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-
-
-
-    - name: Install system dependencies
-      run: |
-
-        sudo apt update
-
-        sudo apt install -y \
-          git \
-          unzip \
-          zip \
-          wget \
-          autoconf \
-          libtool \
-          pkg-config \
-          zlib1g-dev \
-          libncurses5-dev \
-          libncursesw5-dev \
-          cmake
-
-
-
-    - name: Install Buildozer
-      run: |
-
-        python -m pip install --upgrade pip
-
-        pip install buildozer
-
-        pip install cython==0.29.37
-
-
-
-    - name: Setup Android SDK
-      run: |
-
-        mkdir -p $HOME/.buildozer/android/platform/android-sdk
-
-
-        cd /tmp
-
-
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-
-
-        unzip -q commandlinetools-linux-9477386_latest.zip
-
-
-        mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest
-
-
-        mv cmdline-tools/* \
-        $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/
-
-
-        # Compatibilidad con Buildozer
-        mkdir -p $HOME/.buildozer/android/platform/android-sdk/tools/bin
-
-
-        ln -sf \
-        $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager \
-        $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
-
-
-        ln -sf \
-        $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/avdmanager \
-        $HOME/.buildozer/android/platform/android-sdk/tools/bin/avdmanager
-
-
-
-        echo "ANDROIDSDK=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
-
-        echo "ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
-
-
-        echo "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-
-        echo "$HOME/.buildozer/android/platform/android-sdk/tools/bin" >> $GITHUB_PATH
-
-
-
-    - name: Check sdkmanager
-      run: |
-
-        sdkmanager --version
-
-        which sdkmanager
-
-
-
-    - name: Accept Android licenses
-      run: |
-
-        yes | sdkmanager --licenses || true
-
-
-
-    - name: Install Android packages
-      run: |
-
-        sdkmanager \
-          "platform-tools" \
-          "platforms;android-35" \
-          "build-tools;35.0.0"
-
-
-
-        echo "Installed Build Tools:"
-
-        ls $ANDROIDSDK/build-tools
-
-
-
-    - name: Clean previous Buildozer files
-      run: |
-
-        rm -rf .buildozer
-
-        rm -rf ~/.buildozer/android/platform/python-for-android
-
-
-
-    - name: Build APK
-      run: |
-
-        buildozer -v android debug
-
-
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-
-      with:
-
-        name: ControlBus-apk
-
-        path: bin/*.apk
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            git \
+            unzip \
+            zip \
+            wget \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            cmake
+
+      - name: Install Buildozer
+        run: |
+          python -m pip install --upgrade pip
+          pip install buildozer
+          pip install cython==0.29.37
+
+      - name: Setup Android SDK
+        run: |
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk
+          cd /tmp
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q commandlinetools-linux-9477386_latest.zip
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest
+          mv cmdline-tools/* $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/
+          # Compatibilidad con Buildozer
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/tools/bin
+          ln -sf $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
+          ln -sf $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/avdmanager $HOME/.buildozer/android/platform/android-sdk/tools/bin/avdmanager
+          echo "ANDROIDSDK=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+          echo "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$HOME/.buildozer/android/platform/android-sdk/tools/bin" >> $GITHUB_PATH
+
+      - name: Check sdkmanager
+        run: |
+          sdkmanager --version
+          which sdkmanager
+
+      - name: Accept Android licenses
+        run: |
+          yes | sdkmanager --licenses || true
+
+      - name: Install Android packages
+        run: |
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
+          echo "Installed Build Tools:"
+          ls $ANDROIDSDK/build-tools
+
+      - name: Clean previous Buildozer files
+        run: |
+          rm -rf .buildozer
+          rm -rf ~/.buildozer/android/platform/python-for-android
+
+      - name: Ensure python-for-android local copy (to patch before build)
+        run: |
+          P4A_DIR=".buildozer/android/platform/python-for-android"
+          if [ ! -d "$P4A_DIR" ]; then
+            echo "Clonando python-for-android en $P4A_DIR"
+            mkdir -p "$(dirname "$P4A_DIR")"
+            git clone --depth 1 https://github.com/kivy/python-for-android.git "$P4A_DIR"
+          else
+            echo "python-for-android ya existe en $P4A_DIR"
+          fi
+
+      - name: Parchear compatibilidad de pip en python-for-android
+        run: |
+          P4A_DIR=".buildozer/android/platform/python-for-android"
+          if [ -d "$P4A_DIR" ]; then
+            echo "Buscando ocurrencias de BuildDependencyInstallError en $P4A_DIR"
+            grep -R --line-number "BuildDependencyInstallError" "$P4A_DIR" || true
+            # Reemplazamos el import directo por un try/except que define la excepción si no existe.
+            find "$P4A_DIR" -type f -name "*.py" -print0 | \
+              xargs -0 sed -i $'s/from pip._internal.exceptions import BuildDependencyInstallError/try:\\\n    from pip._internal.exceptions import BuildDependencyInstallError\\\nexcept Exception:\\\n    class BuildDependencyInstallError(Exception):\\\n        pass/g'
+            echo "Parche aplicado (si existían ocurrencias) en $P4A_DIR"
+          else
+            echo "Error: no se encontró $P4A_DIR. Asegúrate de que python-for-android esté presente."
+            exit 1
+          fi
+
+      - name: (Opcional) Verificar parche aplicado
+        if: always()
+        run: |
+          P4A_DIR=".buildozer/android/platform/python-for-android"
+          echo "Ocurrencias tras el parche (si las hay):"
+          grep -R --line-number "BuildDependencyInstallError" "$P4A_DIR" || true
+          echo "Buscar clase definida como fallback (si fue parcheado):"
+          grep -R --line-number -n "class BuildDependencyInstallError" "$P4A_DIR" || true
+
+      - name: Build APK
+        run: |
+          buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ControlBus-apk
+          path: bin/*.apk
