@@ -1,51 +1,75 @@
 [app]
 
-# Nombre de la aplicación
+# (str) Nombre de la aplicación
 title = ControlBus
 
-# Versión de la aplicación
-version = 1.0
-
-# Nombre interno del paquete
+# (str) Nombre del paquete
 package.name = controlbus
 
-# Dominio del paquete
-package.domain = org.ferndox
+# (str) Dominio del paquete
+package.domain = org.controlbus
 
-# Carpeta del proyecto
+# (str) Carpeta donde está main.py
 source.dir = .
 
-# Archivos incluidos
-source.include_exts = py,png,jpg,jpeg,kv,json,xlsx,txt
+# (list) Extensiones
+source.include_exts = py,png,jpg,jpeg,kv,xlsx,json
 
-# Dependencias
-requirements = python3,kivy,numpy,opencv,openpyxl,plyer
+# (str) Versión obligatoria
+version = 1.0.0
 
-# Orientación
+
+# (list) Dependencias Python
+requirements = python3,kivy,openpyxl,pillow
+
+
+# (str) Orientación
 orientation = portrait
 
-# Pantalla completa
+
+# (bool) Pantalla completa
 fullscreen = 0
 
 
 
-[android]
+# Android
 
-# Arquitectura Android
-android.archs = arm64-v8a
-
-# Android mínimo compatible
+android.api = 35
 android.minapi = 23
 
-# Android objetivo
-android.api = 35
+# IMPORTANTE: evita build-tools 37
+android.build_tools_version = 35.0.0
 
-# Permisos necesarios
+
+# NDK recomendado
+android.ndk = 28c
+
+
+# Arquitecturas
+android.archs = arm64-v8a,armeabi-v7a
+
+
+# Permisos cámara
 android.permissions = CAMERA,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
+
+
+# Activar cámara Android
+android.enable_androidx = True
+
+
+# Copiar archivos
+android.add_src = .
+
+
+# Nombre del icono (si existe)
+# icon.filename = %(source.dir)s/icon.png
 
 
 
 [buildozer]
 
-# Nivel de logs
+# Log
 log_level = 2
+
+# Avisos
+warn_on_root = 1
