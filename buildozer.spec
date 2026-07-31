@@ -21,11 +21,9 @@ requirements = python3,kivy
 orientation = portrait
 
 
-
 [buildozer]
 
 log_level = 2
-
 
 
 [android]
@@ -33,24 +31,22 @@ log_level = 2
 # Version Android
 android.api = 35
 
+# Version mínima compatible
 android.minapi = 23
 
-
-# Dejamos la recomendada por python-for-android
+# NDK recomendado
 android.ndk = 28c
 
 
-# Licencias
+# NO usar sdk_path personalizado
+# Buildozer lo manejará desde ANDROID_HOME
+
+
 android.accept_sdk_license = True
 
 
-# Build tools instalada en el workflow
+# Herramientas Android
 android.build_tools_version = 35.0.0
-
-
-# IMPORTANTE:
-# Ruta del SDK de GitHub Actions
-android.sdk_path = /home/runner/android-sdk
 
 
 # Arquitecturas
