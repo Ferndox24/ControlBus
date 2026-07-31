@@ -39,7 +39,6 @@ jobs:
 
     - name: Install dependencies
       run: |
-
         sudo apt update
 
         sudo apt install -y \
@@ -55,16 +54,11 @@ jobs:
           cmake
 
 
-
     - name: Install Buildozer
       run: |
-
         python -m pip install --upgrade pip
-
         pip install buildozer
-
         pip install cython==0.29.37
-
 
 
     - name: Setup Android SDK
@@ -72,9 +66,7 @@ jobs:
 
         mkdir -p $HOME/android-sdk/cmdline-tools
 
-
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-
 
         unzip commandlinetools-linux-9477386_latest.zip \
         -d $HOME/android-sdk/cmdline-tools
@@ -87,13 +79,12 @@ jobs:
         $HOME/android-sdk/cmdline-tools/latest/
 
 
-
         echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+
 
         echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-
         echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
-
 
 
     - name: Install Android SDK packages
@@ -108,18 +99,14 @@ jobs:
           "build-tools;35.0.0"
 
 
-        echo "Android Build Tools installed:"
         ls $ANDROID_HOME/build-tools
 
 
 
-    - name: Configure Android SDK for Buildozer
+    - name: Clean Buildozer cache
       run: |
 
-        mkdir -p ~/.buildozer/android/platform/android-sdk
-
-
-        echo "sdk.dir=$ANDROID_HOME" > ~/.buildozer/android/platform/android-sdk/local.properties
+        rm -rf ~/.buildozer
 
 
 
