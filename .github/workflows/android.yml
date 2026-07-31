@@ -10,15 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Descargar código
+      uses: actions/checkout@v4
 
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        with:
-          workdir: .
+    - name: Instalar dependencias
+      run: |
+        sudo apt update
+        sudo apt install -y python3-pip openjdk-17-jdk
+        pip install buildozer cython==0.29.36
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: ControlBus-APK
-          path: bin/*.apk
+    - name: Compilar APK
+      run: |
+        buildozer -v android debug
+
+    - name: Guardar APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: ControlBus APK
+        path: bin/*.apk
