@@ -12,40 +12,40 @@ package.name = controlbus
 # Dominio del paquete
 package.domain = org.ferndox
 
-# Carpeta donde está main.py
+# Carpeta del proyecto
 source.dir = .
 
-# Archivos que se incluirán en la APK
+# Archivos que se incluirán
 source.include_exts = py,png,jpg,jpeg,kv,json,xlsx,txt
 
-# Dependencias de Python/Kivy
+# Dependencias
 requirements = python3,kivy,numpy,opencv,openpyxl,plyer
 
-# Orientación de pantalla
+# Orientación
 orientation = portrait
 
-# Pantalla completa desactivada
+# Pantalla completa
 fullscreen = 0
 
 
 
 [android]
 
-# Arquitectura compatible
+# Arquitectura Android
 android.archs = arm64-v8a
 
-# Android mínimo soportado
+# Android mínimo compatible
 android.minapi = 23
 
 # Android objetivo
 android.api = 35
 
-# Permisos necesarios
+# Permisos
 android.permissions = CAMERA,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 
 
 
 [buildozer]
 
-# Nivel de información del proceso
+# Nivel de logs
 log_level = 2
