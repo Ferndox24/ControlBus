@@ -4,15 +4,12 @@ on:
   push:
     branches:
       - main
-
   workflow_dispatch:
-
 
 jobs:
   build:
 
     runs-on: ubuntu-22.04
-
 
     steps:
 
@@ -24,7 +21,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: "17"
+        java-version: 17
 
 
     - name: Setup Python
@@ -33,24 +30,22 @@ jobs:
         python-version: "3.11"
 
 
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
-
         sudo apt update
 
         sudo apt install -y \
           git \
-          unzip \
           zip \
-          wget \
+          unzip \
           autoconf \
           libtool \
           pkg-config \
           cmake \
           zlib1g-dev \
           libncurses5-dev \
-          libncursesw5-dev
-
+          libncursesw5-dev \
+          openjdk-17-jdk
 
 
     - name: Install Buildozer
@@ -63,52 +58,31 @@ jobs:
         pip install cython==0.29.37
 
 
-
-    - name: Install Android SDK
+    - name: Install Android SDK command tools
       run: |
 
-        mkdir -p /home/runner/android-sdk/cmdline-tools
+        mkdir -p $HOME/android-sdk/cmdline-tools
 
+        cd $HOME/android-sdk/cmdline-tools
 
         wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
 
+        unzip commandlinetools-linux-11076708_latest.zip
 
-        unzip commandlinetools-linux-11076708_latest.zip \
-        -d /home/runner/android-sdk/cmdline-tools
-
-
-        mkdir -p /home/runner/android-sdk/cmdline-tools/latest
+        mv cmdline-tools latest
 
 
-        mv /home/runner/android-sdk/cmdline-tools/cmdline-tools/* \
-        /home/runner/android-sdk/cmdline-tools/latest/
+        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
 
-
-        echo "ANDROID_HOME=/home/runner/android-sdk" >> $GITHUB_ENV
-
-        echo "ANDROID_SDK_ROOT=/home/runner/android-sdk" >> $GITHUB_ENV
-
-
-        echo "/home/runner/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-
-        echo "/home/runner/android-sdk/platform-tools" >> $GITHUB_PATH
-
-
-
-    - name: Check sdkmanager
-      run: |
-
-        which sdkmanager
-
-        sdkmanager --version
-
+        echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+        echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
 
 
     - name: Accept Android licenses
       run: |
 
-        yes | sdkmanager --licenses
-
+        yes | sdkmanager --licenses || true
 
 
     - name: Install Android packages
@@ -120,44 +94,7 @@ jobs:
           "build-tools;35.0.0"
 
 
-
-    - name: Prepare Buildozer SDK path
-      run: |
-
-        rm -rf /home/runner/.buildozer/android/platform/android-sdk
-
-
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/tools/bin
-
-
-        ln -s \
-        /home/runner/android-sdk/cmdline-tools/latest/bin/sdkmanager \
-        /home/runner/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
-
-
-        ln -s \
-        /home/runner/android-sdk/build-tools \
-        /home/runner/.buildozer/android/platform/android-sdk/build-tools
-
-
-        ln -s \
-        /home/runner/android-sdk/platforms \
-        /home/runner/.buildozer/android/platform/android-sdk/platforms
-
-
-        ln -s \
-        /home/runner/android-sdk/platform-tools \
-        /home/runner/.buildozer/android/platform/android-sdk/platform-tools
-
-
-
-    - name: Verify Buildozer SDK
-      run: |
-
-        ls -la /home/runner/.buildozer/android/platform/android-sdk/tools/bin
-
-        /home/runner/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --version
-
+        ls $ANDROID_HOME/build-tools
 
 
     - name: Clean previous build
@@ -166,12 +103,10 @@ jobs:
         rm -rf .buildozer
 
 
-
     - name: Build APK
       run: |
 
         buildozer -v android debug
-
 
 
     - name: Upload APK
