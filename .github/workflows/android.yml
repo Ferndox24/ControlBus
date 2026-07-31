@@ -102,14 +102,33 @@ jobs:
         run: |
           P4A_DIR=".buildozer/android/platform/python-for-android"
           if [ -d "$P4A_DIR" ]; then
-            echo "Buscando ocurrencias de BuildDependencyInstallError en $P4A_DIR"
-            grep -R --line-number "BuildDependencyInstallError" "$P4A_DIR" || true
-            # Reemplazamos el import directo por un try/except que define la excepción si no existe.
-            find "$P4A_DIR" -type f -name "*.py" -print0 | \
-              xargs -0 sed -i $'s/from pip._internal.exceptions import BuildDependencyInstallError/try:\\\n    from pip._internal.exceptions import BuildDependencyInstallError\\\nexcept Exception:\\\n    class BuildDependencyInstallError(Exception):\\\n        pass/g'
-            echo "Parche aplicado (si existían ocurrencias) en $P4A_DIR"
+            echo "Patching BuildDependencyInstallError occurrences in $P4A_DIR"
+            python - <<'PY'
+import pathlib
+p4a = pathlib.Path(".buildozer/android/platform/python-for-android")
+pattern = "from pip._internal.exceptions import BuildDependencyInstallError"
+replacement = (
+    "try:\\n"
+    "    from pip._internal.exceptions import BuildDependencyInstallError\\n"
+    "except Exception:\\n"
+    "    class BuildDependencyInstallError(Exception):\\n"
+    "        pass"
+)
+patched = 0
+for p in p4a.rglob("*.py"):
+    try:
+        text = p.read_text(encoding='utf-8')
+    except Exception:
+        continue
+    if pattern in text:
+        text = text.replace(pattern, replacement)
+        p.write_text(text, encoding='utf-8')
+        print('Patched', p)
+        patched += 1
+print(f"Total files patched: {patched}")
+PY
           else
-            echo "Error: no se encontró $P4A_DIR. Asegúrate de que python-for-android esté presente."
+            echo "Error: $P4A_DIR no encontrado; asegúrate de que python-for-android esté clonado."
             exit 1
           fi
 
