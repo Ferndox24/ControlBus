@@ -1,6 +1,8 @@
 name: Build Android APK
 
+
 on:
+
   push:
     branches:
       - main
@@ -8,13 +10,16 @@ on:
   workflow_dispatch:
 
 
+
 jobs:
+
   build:
 
     runs-on: ubuntu-22.04
 
 
     steps:
+
 
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -23,20 +28,25 @@ jobs:
 
     - name: Setup Java 17
       uses: actions/setup-java@v4
+
       with:
+
         distribution: temurin
+
         java-version: "17"
 
 
 
     - name: Setup Python
       uses: actions/setup-python@v5
+
       with:
+
         python-version: "3.11"
 
 
 
-    - name: Install Linux dependencies
+    - name: Install dependencies
       run: |
 
         sudo apt update
@@ -70,6 +80,7 @@ jobs:
     - name: Install Android SDK
       run: |
 
+
         mkdir -p $HOME/android-sdk/cmdline-tools
 
 
@@ -80,6 +91,7 @@ jobs:
         -d $HOME/android-sdk/cmdline-tools
 
 
+
         mkdir -p $HOME/android-sdk/cmdline-tools/latest
 
 
@@ -87,9 +99,11 @@ jobs:
         $HOME/android-sdk/cmdline-tools/latest/
 
 
+
         echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
 
         echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+
 
 
         echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
@@ -98,8 +112,9 @@ jobs:
 
 
 
-    - name: Accept Android licenses
+    - name: Accept licenses
       run: |
+
 
         yes | sdkmanager \
         --sdk_root=$ANDROID_HOME \
@@ -107,26 +122,30 @@ jobs:
 
 
 
-    - name: Install Android packages
+
+    - name: Install SDK packages
       run: |
+
 
         sdkmanager \
         --sdk_root=$ANDROID_HOME \
         "platform-tools" \
         "platforms;android-35" \
-        "build-tools;35.0.0" \
-        "ndk;25.2.9519653"
+        "build-tools;35.0.0"
 
 
 
-    - name: Verify Android SDK
+    - name: Verify SDK
       run: |
 
-        echo "SDK:"
-        ls $ANDROID_HOME
+
+        echo "SDK PATH"
+
+        echo $ANDROID_HOME
 
 
-        echo "Build tools:"
+        echo "Build tools"
+
         ls $ANDROID_HOME/build-tools
 
 
@@ -134,25 +153,35 @@ jobs:
     - name: Configure Buildozer SDK
       run: |
 
-        mkdir -p ~/.buildozer/android/platform/android-sdk
+
+        rm -rf ~/.buildozer/android/platform/android-sdk
 
 
-        echo "sdk.dir=$ANDROID_HOME" > \
-        ~/.buildozer/android/platform/android-sdk/local.properties
+        mkdir -p ~/.buildozer/android/platform
+
+
+
+        ln -s $ANDROID_HOME \
+        ~/.buildozer/android/platform/android-sdk
+
 
 
 
     - name: Build APK
       run: |
 
+
         rm -rf .buildozer
+
 
         buildozer -v android debug
 
 
 
+
     - name: Upload APK
       uses: actions/upload-artifact@v4
+
 
       with:
 
