@@ -37,9 +37,6 @@ android.minapi = 23
 android.ndk = 28c
 
 
-# IMPORTANTE
-android.sdk_path = /home/runner/android-sdk
-
 android.build_tools_version = 35.0.0
 
 android.accept_sdk_license = True
