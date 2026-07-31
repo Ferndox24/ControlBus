@@ -1,8 +1,6 @@
 name: Build Android APK
 
-
 on:
-
   push:
     branches:
       - main
@@ -10,9 +8,7 @@ on:
   workflow_dispatch:
 
 
-
 jobs:
-
   build:
 
     runs-on: ubuntu-22.04
@@ -20,30 +16,21 @@ jobs:
 
     steps:
 
-
-    - name: Checkout repository
+    - name: Checkout
       uses: actions/checkout@v4
-
 
 
     - name: Setup Java 17
       uses: actions/setup-java@v4
-
       with:
-
         distribution: temurin
-
-        java-version: "17"
-
+        java-version: 17
 
 
     - name: Setup Python
       uses: actions/setup-python@v5
-
       with:
-
         python-version: "3.11"
-
 
 
     - name: Install dependencies
@@ -53,9 +40,9 @@ jobs:
 
         sudo apt install -y \
           git \
-          wget \
           unzip \
           zip \
+          wget \
           autoconf \
           libtool \
           pkg-config \
@@ -63,7 +50,6 @@ jobs:
           libncurses5-dev \
           libncursesw5-dev \
           cmake
-
 
 
     - name: Install Buildozer
@@ -80,7 +66,6 @@ jobs:
     - name: Install Android SDK
       run: |
 
-
         mkdir -p $HOME/android-sdk/cmdline-tools
 
 
@@ -91,7 +76,6 @@ jobs:
         -d $HOME/android-sdk/cmdline-tools
 
 
-
         mkdir -p $HOME/android-sdk/cmdline-tools/latest
 
 
@@ -99,11 +83,9 @@ jobs:
         $HOME/android-sdk/cmdline-tools/latest/
 
 
-
         echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
 
         echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-
 
 
         echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
@@ -112,79 +94,48 @@ jobs:
 
 
 
+    - name: Check sdkmanager
+      run: |
+
+        sdkmanager --version
+
+
+
     - name: Accept licenses
       run: |
 
-
-        yes | sdkmanager \
-        --sdk_root=$ANDROID_HOME \
-        --licenses || true
+        yes | sdkmanager --licenses
 
 
 
-
-    - name: Install SDK packages
+    - name: Install Android packages
       run: |
 
-
         sdkmanager \
-        --sdk_root=$ANDROID_HOME \
         "platform-tools" \
         "platforms;android-35" \
         "build-tools;35.0.0"
 
 
 
-    - name: Verify SDK
+    - name: Clean old build
       run: |
 
-
-        echo "SDK PATH"
-
-        echo $ANDROID_HOME
-
-
-        echo "Build tools"
-
-        ls $ANDROID_HOME/build-tools
-
-
-
-    - name: Configure Buildozer SDK
-      run: |
-
-
-        rm -rf ~/.buildozer/android/platform/android-sdk
-
-
-        mkdir -p ~/.buildozer/android/platform
-
-
-
-        ln -s $ANDROID_HOME \
-        ~/.buildozer/android/platform/android-sdk
-
+        rm -rf .buildozer
 
 
 
     - name: Build APK
       run: |
 
-
-        rm -rf .buildozer
-
-
         buildozer -v android debug
-
 
 
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
-
-
       with:
 
-        name: ControlBus-apk
+        name: ControlBus-debug-apk
 
         path: bin/*.apk
