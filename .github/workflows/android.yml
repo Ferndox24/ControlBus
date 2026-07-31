@@ -11,78 +11,107 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install Linux dependencies
         run: |
           sudo apt update
           sudo apt install -y \
-            git unzip zip wget \
-            autoconf libtool pkg-config \
-            zlib1g-dev libncurses5-dev libncursesw5-dev \
+            git \
+            zip \
+            unzip \
+            wget \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
             cmake
 
-      - name: Install Buildozer
+      - name: Install Python packages
         run: |
-          python -m pip install --upgrade pip
-          pip install buildozer cython==0.29.37
+          python -m pip install --upgrade "pip<24"
+          python -m pip install buildozer==1.5.0
+          python -m pip install cython==0.29.37
 
-      - name: Install Android SDK
+      - name: Clean previous build
         run: |
-          SDK=$HOME/.buildozer/android/platform/android-sdk
+          rm -rf .buildozer
+          rm -rf ~/.buildozer
 
-          mkdir -p $SDK
+      - name: Download Android Command Line Tools
+        run: |
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk
+
           cd /tmp
 
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
 
           unzip -q commandlinetools-linux-9477386_latest.zip
 
-          mkdir -p $SDK/cmdline-tools/latest
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest
 
-          mv cmdline-tools/* $SDK/cmdline-tools/latest/
+          cp -r cmdline-tools/* \
+            $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/
 
-          mkdir -p $SDK/tools/bin
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/tools/bin
 
-          ln -sf $SDK/cmdline-tools/latest/bin/sdkmanager $SDK/tools/bin/sdkmanager
-          ln -sf $SDK/cmdline-tools/latest/bin/avdmanager $SDK/tools/bin/avdmanager
+          ln -sf \
+          $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager \
+          $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
 
-          echo "ANDROID_HOME=$SDK" >> $GITHUB_ENV
-          echo "ANDROIDSDK=$SDK" >> $GITHUB_ENV
+          ln -sf \
+          $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/avdmanager \
+          $HOME/.buildozer/android/platform/android-sdk/tools/bin/avdmanager
 
-          echo "$SDK/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          echo "$SDK/tools/bin" >> $GITHUB_PATH
+      - name: Configure Environment
+        run: |
+          echo "ANDROIDSDK=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+
+          echo "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$HOME/.buildozer/android/platform/android-sdk/tools/bin" >> $GITHUB_PATH
+          echo "$HOME/.buildozer/android/platform/android-sdk/platform-tools" >> $GITHUB_PATH
 
       - name: Verify SDK
         run: |
           which sdkmanager
           sdkmanager --version
 
-      - name: Accept licenses
+      - name: Accept Licenses
         run: |
-          yes | sdkmanager --licenses || true
+          yes | sdkmanager --licenses
 
-      - name: Install Android packages
+      - name: Install Android SDK
         run: |
           sdkmanager \
             "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0"
 
-          ls -R $ANDROIDSDK/build-tools
-
-      - name: Clean Buildozer
+      - name: Show installed SDK
         run: |
-          rm -rf .buildozer
+          ls -R $ANDROIDSDK
+
+      - name: Show versions
+        run: |
+          python --version
+          python -m pip --version
+          buildozer --version
 
       - name: Build APK
         run: |
