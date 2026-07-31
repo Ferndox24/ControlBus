@@ -13,11 +13,9 @@ requirements = python3,kivy
 
 orientation = portrait
 
-
 [buildozer]
 
 log_level = 2
-
 
 [android]
 
