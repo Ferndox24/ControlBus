@@ -1,90 +1,84 @@
 [app]
 
-# (str) Nombre de la aplicación
+# Nombre de la aplicación
 title = ControlBus
 
-# (str) Nombre del paquete (sin espacios)
+# Nombre interno del paquete (sin espacios)
 package.name = controlbus
 
-# (str) Dominio inverso
-package.domain = org.example
+# Dominio inverso
+package.domain = org.controlbus
 
 
-# (str) Carpeta donde está main.py
+# Carpeta donde está tu main.py
 source.dir = .
 
-# (list) Extensiones de archivos que se incluirán
-source.include_exts = py,png,jpg,jpeg,kv,json,txt
+# Extensiones que incluirá la aplicación
+source.include_exts = py,kv,png,jpg,jpeg,json,txt,atlas
 
 
-# (str) Versión de la aplicación
+# Versión de la aplicación
 version = 1.0
 
 
-# (list) Dependencias de Python
+# Dependencias
 requirements = python3,kivy
 
 
-# (str) Orientación de pantalla
+# Orientación
 orientation = portrait
 
 
-# (bool) Permitir pantalla completa
+# Ocultar barra de estado
 fullscreen = 0
 
 
 
-# -------------------------
-# ANDROID
-# -------------------------
+[buildozer]
 
-# Versión de Android usada para compilar
+# Nivel de información del proceso
+log_level = 2
+
+
+# Limpiar compilaciones anteriores si es necesario
+warn_on_root = 1
+
+
+
+[android]
+
+# Versión Android usada para compilar
 android.api = 35
 
 # Versión mínima compatible
 android.minapi = 23
 
-# NDK recomendado por python-for-android
+
+# NDK recomendado para versiones actuales
 android.ndk = 28c
 
 
-# Arquitecturas soportadas
-android.archs = arm64-v8a, armeabi-v7a
+# Arquitecturas compatibles
+archs = arm64-v8a,armeabi-v7a
 
 
 # Aceptar licencias automáticamente
 android.accept_sdk_license = True
 
 
-# Evita que busque build-tools 37
+# Usar build tools estable
 android.build_tools_version = 35.0.0
 
 
-# Permisos (agrega solo los que uses)
-# INTERNET si usas conexión
-android.permissions = INTERNET
+# Nombre del archivo final
+android.entrypoint = org.kivy.android.PythonActivity
 
 
 
-# -------------------------
-# BUILD
-# -------------------------
+[python]
 
-# Nombre del archivo generado
-android.release_artifact = apk
-
-# Usar gradle moderno
-android.gradle_dependencies =
-
-
-# -------------------------
-# KIVY
-# -------------------------
-
-[buildozer]
-
-# Log más detallado
-log_level = 2
+# No usar Python debug
+python.debug = 0
 
 # No usar warnings como errores
 warn_on_root = 1
