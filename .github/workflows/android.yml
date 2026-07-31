@@ -56,17 +56,9 @@ jobs:
     - name: Aceptar licencias Android
       run: |
 
-        yes | sdkmanager --licenses || true
+        mkdir -p ~/.buildozer/android/platform
 
-
-
-    - name: Instalar Android Build Tools
-      run: |
-
-        sdkmanager \
-          "platform-tools" \
-          "platforms;android-35" \
-          "build-tools;35.0.0"
+        yes | ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses || true
 
 
 
