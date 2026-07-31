@@ -42,36 +42,13 @@ log_level = 2
 
 [android]
 
-# Android API
+[android]
+
 android.api = 35
-
-
-# Minimum Android version
 android.minapi = 23
-
-
-# NDK version
 android.ndk = 28c
-
-
-# Architecture
-archs = arm64-v8a,armeabi-v7a
-
-
-# Accept SDK licenses
 android.accept_sdk_license = True
-
-
-# Use build tools
 android.build_tools_version = 35.0.0
 
-
-# Disable old SDK path
-# NO poner android.sdk_path aquí
-
-
-# Permissions (agrega solo si las necesitas)
-# android.permissions = INTERNET,CAMERA,READ_EXTERNAL_STORAGE
-
-
+archs = arm64-v8a,armeabi-v7a
 
