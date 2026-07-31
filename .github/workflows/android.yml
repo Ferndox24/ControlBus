@@ -1,30 +1,71 @@
-name: Build Android APK
+name: Build ControlBus APK
 
 on:
   push:
     branches:
       - main
 
+  workflow_dispatch:
+
+
 jobs:
+
   build:
+
     runs-on: ubuntu-latest
 
+
     steps:
-    - name: Descargar código
+
+    - name: Descargar repositorio
       uses: actions/checkout@v4
+
+
 
     - name: Instalar dependencias
       run: |
+
         sudo apt update
-        sudo apt install -y python3-pip openjdk-17-jdk
-        pip install buildozer cython==0.29.36
+
+        sudo apt install -y \
+          python3-pip \
+          openjdk-17-jdk \
+          zip \
+          unzip \
+          autoconf \
+          libtool \
+          pkg-config \
+          zlib1g-dev \
+          libncurses5-dev \
+          libncursesw5-dev \
+          cmake
+
+
+
+    - name: Instalar Buildozer
+      run: |
+
+        pip install --upgrade pip
+
+        pip install \
+          buildozer \
+          cython==0.29.36
+
+
+
 
     - name: Compilar APK
       run: |
+
         buildozer -v android debug
+
+
 
     - name: Guardar APK
       uses: actions/upload-artifact@v4
+
       with:
-        name: ControlBus APK
+
+        name: ControlBus-APK
+
         path: bin/*.apk
