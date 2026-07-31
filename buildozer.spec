@@ -75,5 +75,3 @@ android.build_tools_version = 35.0.0
 
 
 
-# (str) Python for android branch
-p4a.branch = master
